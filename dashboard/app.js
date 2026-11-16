@@ -336,14 +336,22 @@
     renderBoard();
   }
 
-  // Deep links, so a state can be opened (and screenshotted) from a URL: #detail=<slug> opens one
-  // protocol's detail panel, #watchlist shows only the watchlist, #category=<name> filters by category.
+  // Deep links, so a state can be opened (and screenshotted) from a URL: ?detail=<slug> or
+  // #detail=<slug> opens one protocol's detail panel, ?watchlist or #watchlist shows only the
+  // watchlist, ?category=<name> or #category=<name> filters by category. Query parameters are
+  // read as well as the hash so screenshot services that drop the fragment still reach the state.
   function applyHash() {
+    var spec = '';
+    var q = location.search || '';
+    if (q.charAt(0) === '?') q = q.slice(1);
+    if (q) spec = q;
     var h = location.hash || '';
-    if (!h) return;
-    var m = h.match(/^#detail=([A-Za-z0-9._-]+)$/);
+    if (h.charAt(0) === '#') h = h.slice(1);
+    if (h) spec = h;
+    if (!spec) return;
+    var m = spec.match(/^detail=([A-Za-z0-9._-]+)$/);
     if (m) { openDetail(m[1]); return; }
-    if (h === '#watchlist') {
+    if (spec === 'watchlist') {
       state.watchOnly = true;
       var w = $('watchonly');
       w.checked = true;
@@ -351,7 +359,7 @@
       renderBoard();
       return;
     }
-    var c = h.match(/^#category=(.+)$/);
+    var c = spec.match(/^category=(.+)$/);
     if (c) {
       var name = decodeURIComponent(c[1]);
       var found = false;
