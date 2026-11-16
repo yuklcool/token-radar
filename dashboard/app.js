@@ -336,6 +336,34 @@
     renderBoard();
   }
 
+  // Deep links, so a state can be opened (and screenshotted) from a URL: #detail=<slug> opens one
+  // protocol's detail panel, #watchlist shows only the watchlist, #category=<name> filters by category.
+  function applyHash() {
+    var h = location.hash || '';
+    if (!h) return;
+    var m = h.match(/^#detail=([A-Za-z0-9._-]+)$/);
+    if (m) { openDetail(m[1]); return; }
+    if (h === '#watchlist') {
+      state.watchOnly = true;
+      var w = $('watchonly');
+      w.checked = true;
+      w.closest('.toggle').classList.add('on');
+      renderBoard();
+      return;
+    }
+    var c = h.match(/^#category=(.+)$/);
+    if (c) {
+      var name = decodeURIComponent(c[1]);
+      var found = false;
+      DATA.rows.forEach(function (r) { if (catName(r) === name) found = true; });
+      if (found) {
+        state.category = name;
+        $('cat').value = name;
+        renderBoard();
+      }
+    }
+  }
+
   function updateSandboxStatus() {
     var status = $('sandbox-status');
     if (!sandboxActive()) {
@@ -421,6 +449,7 @@
 
     renderBoard();
     renderLive();
+    applyHash();
   }
 
   // data.js may arrive through the fallback script the page injects when ../data.js is missing,
