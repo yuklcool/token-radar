@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar — pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="radar-dot" aria-hidden="true"></span><span class="brand-name">TOKEN RADAR</span></div>
+  <div class="top-meta">
+    <span>Snapshot <b id="meta-date">—</b></span>
+    <span>DefiLlama protocol index</span>
+    <span>Model <b id="meta-model">—</b></span>
+  </div>
+</header>
+<main class="shell">
+  <section class="lede">
+    <div>
+      <h1>Pre-token protocols, ranked by implied value</h1>
+      <p class="model-line">Implied value = TVL × the median market-cap/TVL ratio of live-token protocols in its category × growth × maturity × chain breadth. It is a model&rsquo;s claim about what a token would be worth if the protocol&rsquo;s record stayed as it is — not a price, and not a prediction that a token comes.</p>
+    </div>
+    <dl class="facts">
+      <div><dt>Watchlist covered</dt><dd id="stat-watchlist">—</dd></div>
+      <div><dt>Board rows</dt><dd id="stat-rows">—</dd></div>
+      <div><dt>Early rows below the floor</dt><dd id="stat-early">—</dd></div>
+      <div><dt>Live-token protocols set aside</dt><dd id="stat-live">—</dd></div>
+      <div><dt>Global mcap/TVL ratio</dt><dd id="stat-ratio">—</dd></div>
+    </dl>
+  </section>
+
+  <section class="panel sandbox" aria-label="Model sandbox">
+    <div class="sandbox-head">
+      <h2>Model sandbox</h2>
+      <p class="sandbox-note">Exploratory — moving a dial re-scores and re-ranks this page only. The submitted board uses growth weight 0.6 and maturity floor 0.6.</p>
+    </div>
+    <div class="sliders">
+      <label class="slider-row"><span>Growth weight <output id="gw-out">0.60</output></span><input type="range" id="gw" min="0" max="1.5" step="0.05" value="0.6" aria-label="Growth weight"></label>
+      <label class="slider-row"><span>Maturity floor <output id="mf-out">0.60</output></span><input type="range" id="mf" min="0" max="1" step="0.05" value="0.6" aria-label="Maturity floor"></label>
+      <button type="button" id="sandbox-reset" class="button">Reset to submitted model</button>
+    </div>
+    <p class="sandbox-status" id="sandbox-status">Showing the submitted board.</p>
+  </section>
+
+  <section class="controls" aria-label="Board controls">
+    <div class="field"><label for="q">Search</label><input type="search" id="q" placeholder="Name or slug" autocomplete="off"></div>
+    <div class="field"><label for="cat">Category</label><select id="cat"><option value="all">All categories</option></select></div>
+    <div class="field"><label for="chain">Chain</label><select id="chain"><option value="all">All chains</option></select></div>
+    <label class="toggle"><input type="checkbox" id="watchonly"><span>Watchlist only</span></label>
+    <span class="count" id="count">—</span>
+  </section>
+
+  <section class="panel" aria-label="Ranked board">
+    <div class="table-wrap">
+      <table id="board">
+        <caption>Pre-token protocols, strongest implied value first. Select a row for its model breakdown and farm plan. Watchlist means TVL at or above the floor; early means a pre-token protocol below the floor.</caption>
+        <thead><tr>
+          <th scope="col"><button type="button" data-sort="rank">Rank</button></th>
+          <th scope="col"><button type="button" data-sort="name">Protocol</button></th>
+          <th scope="col"><button type="button" data-sort="tvl">TVL</button></th>
+          <th scope="col"><button type="button" data-sort="growth">7d</button></th>
+          <th scope="col"><button type="button" data-sort="age">Age</button></th>
+          <th scope="col"><button type="button" data-sort="implied">Implied value</button></th>
+          <th scope="col">Set</th>
+        </tr></thead>
+        <tbody id="board-body"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="board-empty" hidden>
+      <h2>No protocol matches that filter</h2>
+      <p>Clear the search or pick another category or chain.</p>
+      <button type="button" class="button primary" id="clear-filters">Clear filters</button>
+    </div>
+  </section>
+
+  <section class="panel live" aria-label="Live-token protocols">
+    <div class="live-head">
+      <h2>Already trading — not ranked</h2>
+      <p>These protocols already have a token, so their market cap is a fact from the market, not a model&rsquo;s estimate. They are set aside from the pre-token ranking — and their market-cap/TVL ratios are what the model learns from.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <caption>Live-token protocols by market cap.</caption>
+        <thead><tr><th scope="col">Protocol</th><th scope="col">Category</th><th scope="col">TVL</th><th scope="col">Market cap</th><th scope="col">Mcap / TVL</th><th scope="col">7d</th></tr></thead>
+        <tbody id="live-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>Snapshot <span id="foot-date">—</span> · watchlist floor <span id="foot-floor">—</span> · every protocol on the watchlist is on the board; the early radar adds pre-token protocols below the floor, by TVL. A protocol &ldquo;records no token&rdquo; when DefiLlama&rsquo;s record carries none — that is the record, not proof it has none.</p>
+    <p>Implied value follows only from the snapshot&rsquo;s figures: TVL, seven-day growth, time listed with no token, and chain breadth. Nothing here is investment advice.</p>
+  </footer>
+  <p class="data-error" id="data-error" hidden>No data: data.js did not load. Open this page from the output folder, with data.js beside the dashboard folder.</p>
+</main>
+
+<aside class="detail" id="detail" aria-label="Protocol detail" hidden>
+  <div class="detail-inner" id="detail-inner"></div>
+</aside>
+<div class="backdrop" id="backdrop" hidden></div>
+
+<script>function radarFallback(){var s=document.createElement('script');s.src='data.js';document.head.appendChild(s);}</script>
+<script src="../data.js" onerror="radarFallback()"></script>
+<script src="app.js"></script>
+</body>
+</html>
